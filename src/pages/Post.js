@@ -24,13 +24,11 @@ const Post = () => {
   useEffect(() => {
     const fetchPostAndComments = async () => {
       try {
-        // Fetch current user
         const { data: { user }, error: authError } = await supabase.auth.getUser();
         console.log('Current user:', user);
         if (authError) throw authError;
         setCurrentUser(user);
 
-        // Fetch post
         const { data: postData, error: postError } = await supabase
 
 
@@ -47,13 +45,11 @@ const Post = () => {
         setEditImageUrl(postData.image_url || '');
         setEditYoutubeUrl(postData.youtube_url || '');
 
-        // Increment views
         await supabase
           .from('posts')
           .update({ views: (postData.views || 0) + 1 })
           .eq('id', id);
 
-        // Fetch comments
         const { data: commentsData, error: commentsError } = await supabase
           .from('comments')
           .select('*')
@@ -119,7 +115,6 @@ const Post = () => {
         ]);
       if (insertError) throw insertError;
 
-      // Refresh comments
       const { data: updatedComments, error: commentsError } = await supabase
         .from('comments')
         .select('*')

@@ -17,7 +17,6 @@ const CreatePost = () => {
   const history = useHistory();
   const isMounted = useRef(true);
 
-  // Cleanup on unmount
   useEffect(() => {
     isMounted.current = true;
     return () => {
@@ -116,12 +115,11 @@ const CreatePost = () => {
           .upload(fileName, image);
         if (uploadError) throw uploadError;
 
-        // Get the public URL
         const { data: publicUrlData } = supabase.storage
           .from('post-images')
           .getPublicUrl(fileName);
         imageUrl = publicUrlData.publicUrl;
-        console.log('Generated image URL:', imageUrl); // Debug log
+        console.log('Generated image URL:', imageUrl); 
       }
 
       const tagArray = tags.split(',').map((tag) => tag.trim()).filter((tag) => tag);
