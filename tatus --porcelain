@@ -1,0 +1,16 @@
+warning: in the working copy of '.gitignore', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'discourse-backend/package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/App.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/index.css', LF will be replaced by CRLF the next time Git touches it
+M	.gitignore
+M	README.md
+M	discourse-backend/package.json
+D	src/.env
+M	src/App.js
+M	src/components/CreatePost.js
+M	src/components/Settings.js
+M	src/index.css
+M	src/pages/About.js
+M	src/pages/Home.js
+M	src/supabaseClient.js

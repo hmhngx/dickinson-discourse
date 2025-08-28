@@ -1,76 +1,211 @@
-# Web Development Final Project - *Dickinson Discourse*
+# Dickinson Discourse
 
-Submitted by: **Hung Nguyen**
+A modern, student-built platform designed to foster collaboration and intellectual exchange within the Dickinson College community. Built with React, Supabase, and Tailwind CSS, this platform enables students and faculty to share research, discuss academic ideas, and engage in civic discourse.
 
-This web app: **Dickinson Discourse is a student-built platform designed to foster collaboration and intellectual exchange within the Dickinson College community. Inspired by Dickinson’s commitment to liberal arts education, global perspectives, and student-faculty partnerships, this platform enables students and faculty to share research, discuss academic ideas, and engage in civic discourse. Key features include: Department-specific discussions tied to Dickinson’s 40+ majors, support for student-faculty research projects and capstone showcases, accessible design compliant with ADA standards, secure, anonymous authentication for open yet safe participation, built with React, Supabase, and Tailwind CSS, Dickinson Discourse reflects the college’s values of innovation, inclusion, and community.**
+## 🌟 Features
 
-Time spent: **6.5** hours spent in total
+### Core Functionality
+- **Create Posts**: Rich text posts with optional images, YouTube videos, and tags
+- **Home Feed**: Browse and search posts with filtering by major/department
+- **Post Interactions**: Upvote posts, leave comments, and engage in discussions
+- **User Authentication**: Secure anonymous authentication for safe participation
+- **Post Management**: Edit and delete your own posts with secret key authentication
 
-## Required Features
+### Advanced Features
+- **Department-Specific Discussions**: Filter by Dickinson's 40+ majors
+- **Media Support**: Upload images directly or add YouTube videos
+- **Post Categories**: Flag posts as "Question" or "Opinion"
+- **Responsive Design**: Accessible design compliant with ADA standards
+- **Dark/Light Theme**: Customizable interface with theme switching
+- **Search & Filter**: Find posts by title, tags, or department
 
-The following **required** functionality is completed:
+## 🛠️ Tech Stack
 
+### Frontend
+- **React 17.0.2** - User interface framework
+- **React Router DOM** - Client-side routing
+- **Tailwind CSS** - Utility-first CSS framework
+- **React Icons** - Icon library
+- **React Spinners** - Loading animations
+- **React YouTube** - YouTube video integration
+- **UUID** - Unique identifier generation
 
-- [x] **Web app includes a create form that allows the user to create posts**
-  - Form requires users to add a post title
-  - Forms should have the *option* for users to add: 
-    - additional textual content
-    - an image added as an external image URL
-- [x] **Web app includes a home feed displaying previously created posts**
-  - Web app must include home feed displaying previously created posts
-  - By default, each post on the posts feed should show only the post's:
-    - creation time
-    - title 
-    - upvotes count
-  - Clicking on a post should direct the user to a new page for the selected post
-- [x] **Users can view posts in different ways**
-  - Users can sort posts by either:
-    -  creation time
-    -  upvotes count
-  - Users can search for posts by title
-- [x] **Users can interact with each post in different ways**
-  - The app includes a separate post page for each created post when clicked, where any additional information is shown, including:
-    - content
-    - image
-    - comments
-  - Users can leave comments underneath a post on the post page
-  - Each post includes an upvote button on the post page. 
-    - Each click increases the post's upvotes count by one
-    - Users can upvote any post any number of times
+### Backend & Database
+- **Supabase** - Backend-as-a-Service (PostgreSQL + Auth + Storage)
+- **Express.js** - Backend API server
+- **CORS** - Cross-origin resource sharing
+- **Dotenv** - Environment variable management
 
-- [x] **A post that a user previously created can be edited or deleted from its post pages**
-  - After a user creates a new post, they can go back and edit the post
-  - A previously created post can be deleted from its post page
+## 🚀 Getting Started
 
-The following **optional** features are implemented:
+### Prerequisites
+- Node.js (v14 or higher)
+- npm or yarn package manager
+- Supabase account and project
 
+### Installation
 
-- [x] Web app implements pseudo-authentication
-  - Users can only edit and delete posts or delete comments by entering the secret key, which is set by the user during post creation
-  - **or** upon launching the web app, the user is assigned a random user ID. It will be associated with all posts and comments that they make and displayed on them
-  - For both options, only the original user author of a post can update or delete it
-- [x] Users can repost a previous post by referencing its post ID. On the post page of the new post
-  - Users can repost a previous post by referencing its post ID
-  - On the post page of the new post, the referenced post is displayed and linked, creating a thread
-- [x] Users can customize the interface
-  - e.g., selecting the color scheme or showing the content and image of each post on the home feed
-- [x] Users can add more characterics to their posts
-  - Users can share and view web videos
-  - Users can set flags such as "Question" or "Opinion" while creating a post
-  - Users can filter posts by flags on the home feed
-  - Users can upload images directly from their local machine as an image file
-- [x] Web app displays a loading animation whenever data is being fetched
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd dickinson-discourse
+   ```
 
-## Video Walkthrough
+2. **Install frontend dependencies**
+   ```bash
+   npm install
+   ```
 
-Here's a walkthrough of implemented user stories:
-![wlk thru](public/images/forum.gif)
+3. **Install backend dependencies**
+   ```bash
+   cd discourse-backend
+   npm install
+   cd ..
+   ```
 
-## Notes
+4. **Environment Setup**
+   
+   Create a `.env` file in the root directory:
+   ```env
+   REACT_APP_SUPABASE_URL=your_supabase_project_url
+   REACT_APP_SUPABASE_KEY=your_supabase_anon_key
+   ```
+   
+   Create a `.env` file in the `discourse-backend` directory:
+   ```env
+   SUPABASE_URL=your_supabase_project_url
+   SUPABASE_KEY=your_supabase_service_role_key
+   PORT=5000
+   ```
 
-Describe any challenges encountered while building the app.
+5. **Supabase Setup**
+   
+   In your Supabase project, create the following tables:
+   
+   **posts table:**
+   ```sql
+   CREATE TABLE posts (
+     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+     user_id UUID REFERENCES auth.users(id),
+     title TEXT NOT NULL,
+     content TEXT,
+     category TEXT,
+     tags TEXT[],
+     image_url TEXT,
+     image_alt TEXT,
+     youtube_url TEXT,
+     upvotes INTEGER DEFAULT 0,
+     secret_key UUID DEFAULT gen_random_uuid(),
+     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+   );
+   ```
+   
+   **comments table:**
+   ```sql
+   CREATE TABLE comments (
+     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+     post_id UUID REFERENCES posts(id) ON DELETE CASCADE,
+     user_id UUID REFERENCES auth.users(id),
+     content TEXT NOT NULL,
+     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+   );
+   ```
+   
+   **Storage bucket:**
+   - Create a storage bucket named `post-images`
+   - Set appropriate RLS policies for public read access
 
-## License
+6. **Start the development servers**
+   
+   Frontend (in root directory):
+   ```bash
+   npm start
+   ```
+   
+   Backend (in discourse-backend directory):
+   ```bash
+   cd discourse-backend
+   npm start
+   ```
+
+7. **Access the application**
+   - Frontend: http://localhost:3000
+   - Backend: http://localhost:5000
+
+## 🔒 Security Features
+
+### API Key Management
+- ✅ All Supabase credentials stored in environment variables
+- ✅ No hardcoded API keys in source code
+- ✅ Proper .gitignore configuration for .env files
+- ✅ Anonymous authentication for user privacy
+
+### Data Protection
+- ✅ Row Level Security (RLS) policies in Supabase
+- ✅ Secret key authentication for post editing/deletion
+- ✅ Input validation and sanitization
+- ✅ CORS configuration for secure API access
+
+## 📁 Project Structure
+
+```
+dickinson-discourse/
+├── src/
+│   ├── components/          # Reusable React components
+│   │   ├── CreatePost.js   # Post creation form
+│   │   └── Settings.js     # User settings and theme
+│   ├── pages/              # Page components
+│   │   ├── Home.js         # Main feed page
+│   │   ├── Post.js         # Individual post view
+│   │   └── About.js        # About page
+│   ├── App.js              # Main application component
+│   ├── supabaseClient.js   # Supabase client configuration
+│   └── index.js            # Application entry point
+├── discourse-backend/       # Express.js backend server
+│   ├── index.js            # Backend entry point
+│   └── package.json        # Backend dependencies
+├── public/                 # Static assets
+├── package.json            # Frontend dependencies
+└── README.md              # Project documentation
+```
+
+## 🎨 Customization
+
+### Themes
+The application supports customizable themes through CSS variables:
+- Background colors
+- Text colors
+- Card backgrounds
+- Border colors
+
+### Dickinson Branding
+- Dickinson Red (#D31145)
+- Dickinson Gold (#F4C95D)
+- Serif fonts for headings
+- Responsive design for all devices
+
+## 🚀 Deployment
+
+### Frontend Deployment (Vercel/Netlify)
+1. Build the project: `npm run build`
+2. Deploy the `build` folder to your hosting platform
+3. Set environment variables in your hosting platform
+
+### Backend Deployment
+1. Deploy the `discourse-backend` folder to your server
+2. Set environment variables on your server
+3. Ensure CORS is configured for your frontend domain
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature-name`
+3. Commit your changes: `git commit -am 'Add feature'`
+4. Push to the branch: `git push origin feature-name`
+5. Submit a pull request
+
+## 📝 License
 
     Copyright [2025] [Hung Nguyen]
 
@@ -85,3 +220,21 @@ Describe any challenges encountered while building the app.
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+
+## 🙏 Acknowledgments
+
+- Dickinson College for inspiration and academic context
+- Supabase team for the excellent backend-as-a-service platform
+- React and Tailwind CSS communities for the amazing tools
+- All contributors and testers who helped improve this platform
+
+## 📞 Support
+
+For questions, issues, or contributions, please:
+1. Check existing issues in the repository
+2. Create a new issue with detailed information
+3. Contact the development team
+
+---
+
+**Built with ❤️ for the Dickinson College community**
